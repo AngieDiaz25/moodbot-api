@@ -12,6 +12,10 @@ try:
     nltk.data.find('tokenizers/punkt')
 except:
     nltk.download('punkt', quiet=True)
+    try:
+    nltk.data.find('tokenizers/punkt_tab')
+except:
+    nltk.download('punkt_tab', quiet=True)
 try:
     nltk.data.find('corpora/stopwords')
 except:
