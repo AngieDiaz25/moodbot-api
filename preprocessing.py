@@ -12,7 +12,7 @@ try:
     nltk.data.find('tokenizers/punkt')
 except:
     nltk.download('punkt', quiet=True)
-    try:
+try:
     nltk.data.find('tokenizers/punkt_tab')
 except:
     nltk.download('punkt_tab', quiet=True)
