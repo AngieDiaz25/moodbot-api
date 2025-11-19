@@ -68,6 +68,11 @@ def predict():
 def home():
     return jsonify({"name": "MoodBot API", "version": "1.0.0", "model": "Logistic Regression", "accuracy": "92.93%"}), 200
 
+print("=" * 50)
+print("MOODBOT API - INICIANDO")
+print("=" * 50)
+load_models()
+
 if __name__ == '__main__':
     print("="*50)
     print("MOODBOT API - INICIANDO")
