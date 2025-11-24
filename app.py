@@ -42,9 +42,6 @@ def load_models():
         print(f"Error: {str(e)}")
         return False
 
-@app.route('/health', methods=['GET'])
-def health_check():
-    return jsonify({"status": "healthy", "models_loaded": model is not None}), 200
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -62,11 +59,15 @@ def predict():
         # Traducir de español a inglés
         try:
             message_en = translator_es_en.translate(message[:4999])
+            print(f"🔵 Original (ES): {message}")
+            print(f"🔵 Traducido (EN): {message_en}")
         except:
-            message_en = message  # Si falla, usar original
+            message_en = message
+            print(f"⚠️  Translation failed, using original: {message}")
         
         # Preprocesar en inglés
         preprocessed = preprocessor.preprocess(message_en)
+        print(f"🔵 Preprocesado: {preprocessed}")
         
         if not preprocessed.strip():
             response_es = translator_en_es.translate(RESPONSES["Neutro"][0])
@@ -83,6 +84,7 @@ def predict():
         
         label = label_mapping[prediction]
         confidence = float(probabilities[prediction])
+        print(f"🔵 Predicción: {label} ({confidence:.2%})")
         
         # Traducir respuesta a español
         try:
