@@ -7,6 +7,7 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from nltk.stem import SnowballStemmer
 
 try:
     nltk.data.find('tokenizers/punkt')
@@ -31,8 +32,8 @@ except:
 
 class TextPreprocessor:
     def __init__(self):
-        self.lemmatizer = WordNetLemmatizer()
-        self.stop_words = set(stopwords.words('english'))
+        self.stemmer = SnowballStemmer('spanish')
+    self.stop_words = set(stopwords.words('spanish'))
     
     def clean_text(self, text):
         if not isinstance(text, str):
@@ -50,10 +51,10 @@ class TextPreprocessor:
             return ""
         tokens = word_tokenize(text)
         processed = [
-            self.lemmatizer.lemmatize(token)
-            for token in tokens
-            if token not in self.stop_words and len(token) > 2
-        ]
+    self.stemmer.stem(token)
+    for token in tokens
+    if token not in self.stop_words and len(token) > 2
+    ]
         return ' '.join(processed)
     
     def preprocess(self, text):
