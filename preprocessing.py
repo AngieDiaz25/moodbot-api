@@ -33,7 +33,7 @@ except:
 class TextPreprocessor:
     def __init__(self):
         self.stemmer = SnowballStemmer('spanish')
-    self.stop_words = set(stopwords.words('spanish'))
+        self.stop_words = set(stopwords.words('spanish'))
     
     def clean_text(self, text):
         if not isinstance(text, str):
