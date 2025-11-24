@@ -3,6 +3,7 @@ from flask_cors import CORS
 import joblib
 import os
 from preprocessing import TextPreprocessor
+from deep_translator import GoogleTranslator
 
 app = Flask(__name__)
 CORS(app)
@@ -17,6 +18,10 @@ RESPONSES = {
     "Ansiedad": ["La ansiedad puede ser abrumadora, pero estas dando un paso importante."],
     "Depresion": ["Lamento que estes pasando por un momento dificil. Tus sentimientos son validos."]
 }
+
+
+translator_es_en = GoogleTranslator(source='es', target='en')
+translator_en_es = GoogleTranslator(source='en', target='es')
 
 def load_models():
     global model, vectorizer, preprocessor
@@ -49,18 +54,49 @@ def predict():
         data = request.get_json()
         if not data or 'message' not in data:
             return jsonify({"success": False, "error": "Missing message"}), 400
+        
         message = data['message']
         if not message.strip():
             return jsonify({"success": False, "error": "Empty message"}), 400
-        preprocessed = preprocessor.preprocess(message)
+        
+        # Traducir de español a inglés
+        try:
+            message_en = translator_es_en.translate(message[:4999])
+        except:
+            message_en = message  # Si falla, usar original
+        
+        # Preprocesar en inglés
+        preprocessed = preprocessor.preprocess(message_en)
+        
         if not preprocessed.strip():
-            return jsonify({"success": True, "prediction": {"label": "Neutro", "confidence": 1.0}, "response": RESPONSES["Neutro"][0]}), 200
+            response_es = translator_en_es.translate(RESPONSES["Neutro"][0])
+            return jsonify({
+                "success": True,
+                "prediction": {"label": "Neutro", "confidence": 1.0},
+                "response": response_es
+            }), 200
+        
+        # Clasificar
         vectorized = vectorizer.transform([preprocessed])
         prediction = model.predict(vectorized)[0]
         probabilities = model.predict_proba(vectorized)[0]
+        
         label = label_mapping[prediction]
         confidence = float(probabilities[prediction])
-        return jsonify({"success": True, "prediction": {"label": label, "confidence": round(confidence, 4)}, "response": RESPONSES[label][0], "original_message": message}), 200
+        
+        # Traducir respuesta a español
+        try:
+            response_es = translator_en_es.translate(RESPONSES[label][0])
+        except:
+            response_es = RESPONSES[label][0]
+        
+        return jsonify({
+            "success": True,
+            "prediction": {"label": label, "confidence": round(confidence, 4)},
+            "response": response_es,
+            "original_message": message
+        }), 200
+        
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 

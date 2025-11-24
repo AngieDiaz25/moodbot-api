@@ -32,8 +32,8 @@ except:
 
 class TextPreprocessor:
     def __init__(self):
-        self.stemmer = SnowballStemmer('spanish')
-        self.stop_words = set(stopwords.words('spanish'))
+        self.lemmatizer = WordNetLemmatizer()
+        self.stop_words = set(stopwords.words('english')))
     
     def clean_text(self, text):
         if not isinstance(text, str):
@@ -51,7 +51,7 @@ class TextPreprocessor:
             return ""
         tokens = word_tokenize(text)
         processed = [
-    self.stemmer.stem(token)
+    self.lemmatizer.lemmatize(token)
     for token in tokens
     if token not in self.stop_words and len(token) > 2
     ]
