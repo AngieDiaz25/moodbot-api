@@ -33,7 +33,7 @@ except:
 class TextPreprocessor:
     def __init__(self):
         self.lemmatizer = WordNetLemmatizer()
-        self.stop_words = set(stopwords.words('english')))
+        self.stop_words = set(stopwords.words('english'))
     
     def clean_text(self, text):
         if not isinstance(text, str):
