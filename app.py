@@ -81,11 +81,26 @@ def predict():
         vectorized = vectorizer.transform([preprocessed])
         prediction = model.predict(vectorized)[0]
         probabilities = model.predict_proba(vectorized)[0]
-        
+
         label = label_mapping[prediction]
         confidence = float(probabilities[prediction])
-        print(f"🔵 Predicción: {label} ({confidence:.2%})")
-        
+        print(f"🔵 Predicción original: {label} ({confidence:.2%})")
+
+        # Ajuste basado en palabras clave positivas/negativas
+        positive_words = ['happy', 'great', 'wonderful', 'excited', 'joy', 'love', 'good', 'better', 'amazing']
+        negative_words = ['not', 'never', 'can\'t', 'don\'t', 'won\'t', 'no', 'without']
+
+        has_positive = any(word in preprocessed.lower() for word in positive_words)
+        has_negative = any(word in preprocessed.lower() for word in negative_words)
+
+        # Si tiene palabras positivas SIN negaciones, ajustar a Neutro si la confianza es baja
+        if has_positive and not has_negative and confidence < 0.85 and label != "Neutro":
+            print(f"⚙️  Ajustando predicción: palabras positivas detectadas")
+            label = "Neutro"
+            confidence = 0.75
+
+        print(f"🔵 Predicción final: {label} ({confidence:.2%})")
+
         # Traducir respuesta a español
         try:
             response_es = translator_en_es.translate(RESPONSES[label][0])
