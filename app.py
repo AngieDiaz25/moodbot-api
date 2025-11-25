@@ -42,6 +42,9 @@ def load_models():
         print(f"Error: {str(e)}")
         return False
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "healthy", "models_loaded": model is not None}), 200
 
 @app.route('/predict', methods=['POST'])
 def predict():
